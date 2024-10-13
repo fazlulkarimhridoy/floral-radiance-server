@@ -5,14 +5,15 @@ const prisma = new PrismaClient();
 
 
 // POST /api/products
-router.post("/addProduct", async (req, res) => {
+router.post("/", async (req, res) => {
     console.log(req.body);
-    // if (!req.body.product_name ||!req.body.description ||!req.body.price) {
-    //     console.log(req.body);
-    //     return res.status(400).json({ status: "fail", data: "Missing required fields: name, description, and price" });
-    // }
+    if (!req.body.product_name ||!req.body.description ||!req.body.price) {
+        console.log(req.body);
+        return res.status(400).json({ status: "fail", data: "Missing required fields: name, description, and price" });
+    }
     try {
         const productData = req.body;
+        console.log("product data", productData);
         const result = await prisma.product.create({
             data: productData,
         });
