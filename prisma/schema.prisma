@@ -1,0 +1,88 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// customer model
+model Customer {
+  id         Int      @id @default(autoincrement())
+  customerId String   @unique @default(uuid(4))
+  name       String
+  email      String
+  phone      String
+  address    String
+  createdAt  DateTime @default(now())
+  Orders     Order[]
+
+  @@map("customer")
+}
+
+// product model
+model Product {
+  id             Int       @id @default(autoincrement())
+  productId      Int       @unique
+  images         Json
+  product_name   String    @db.VarChar(255)
+  price          Int
+  discount_price Int
+  stock          Int       @default(0)
+  category       String
+  description    String    @db.LongText
+  rating         Int       @default(0)
+  created_at     DateTime? @default(now()) @db.Timestamp(0)
+  updated_at     DateTime? @default(now()) @updatedAt @db.Timestamp(0)
+  Category       Category? @relation(fields: [categoryId], references: [id])
+  categoryId     Int
+
+  @@map("product")
+}
+
+// category model
+model Category {
+  id          Int    @id @default(autoincrement())
+  categoryId  Int
+  name        String
+  description String
+
+  products Product[]
+
+  @@map("category")
+}
+
+// order model
+model Order {
+  id            Int           @id @default(autoincrement())
+  customer      Customer      @relation(fields: [customerId], references: [id], onUpdate: Cascade)
+  customerId    Int
+  totalPrice    Int
+  deliveryDate  String
+  deliveryTime  String
+  orderStatus   OrderStatus   @default(PENDING)
+  orderDate     DateTime?     @default(now())
+  paymentMethod PaymentMethod @default(CASHON)
+  items         Json
+
+  @@map("order")
+}
+
+// all enums
+enum OrderStatus {
+  PENDING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  CASHON
+  BKASH
+}
