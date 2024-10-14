@@ -10,6 +10,7 @@ app.use(
     cors({
         origin: [
             "http://localhost:3001",
+            "https://floral-radiance-client.netlify.app",
             "https://floral-radiance-client.vercel.app",
             "https://floral-radiance-server.vercel.app",
         ],
