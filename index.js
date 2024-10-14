@@ -1,10 +1,20 @@
 const express = require("express");
+const cors = require("cors");
 const bodyParser = require("body-parser");
 const routes = require("./routes");
 
 const app = express();
 
-app.use(bodyParser.json());
+
+// middlewares
+app.use(
+    cors({
+        origin: ["http://localhost:3001"],
+    })
+);
+
+app.use(bodyParser.json({limit: '100mb'}));
+
 
 // Use the routes
 app.use("/api", routes);
