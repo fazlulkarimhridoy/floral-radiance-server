@@ -5,16 +5,18 @@ const routes = require("./routes");
 
 const app = express();
 
-
 // middlewares
 app.use(
     cors({
-        origin: ["http://localhost:3001"],
+        origin: [
+            "http://localhost:3001",
+            "https://floral-radiance-client.vercel.app",
+            "https://floral-radiance-server.vercel.app",
+        ],
     })
 );
 
-app.use(bodyParser.json({limit: '100mb'}));
-
+app.use(bodyParser.json({ limit: "100mb" }));
 
 // Use the routes
 app.use("/api", routes);
