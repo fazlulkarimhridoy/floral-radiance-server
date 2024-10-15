@@ -70,18 +70,18 @@ router.get("/details/:id", async (req, res) => {
 });
 
 // get image by id
-router.get("/images/:id", async (req, res) => {
+router.get("/images-and-name/:itemId", async (req, res) => {
     try {
-        const productIdString = req.params.id;
+        const productIdString = req.params.itemId;
         const productId = parseInt(productIdString);
         const product = await prisma.product.findUnique({
             where: {
                 id: productId,
             },
-            include: {
-                images: true,
-                product_name: true
-            },
+            select: {
+                product_name: true,
+                images: true
+            }
         });
         if (!product) {
             return res
