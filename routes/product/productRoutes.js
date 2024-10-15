@@ -80,6 +80,7 @@ router.get("/images/:id", async (req, res) => {
             },
             include: {
                 images: true,
+                product_name: true
             },
         });
         if (!product) {
