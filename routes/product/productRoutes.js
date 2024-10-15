@@ -69,6 +69,30 @@ router.get("/details/:id", async (req, res) => {
     }
 });
 
+// get image by id
+router.get("/images/:id", async (req, res) => {
+    try {
+        const productIdString = req.params.id;
+        const productId = parseInt(productIdString);
+        const product = await prisma.product.findUnique({
+            where: {
+                id: productId,
+            },
+            include: {
+                images: true,
+            },
+        });
+        if (!product) {
+            return res
+                .status(404)
+                .json({ status: "fail", data: "Product not found" });
+        }
+        res.json({ status: "success", data: product });
+    } catch (error) {
+        res.status(400).json({ status: "fail", data: error });
+    }
+});
+
 // delete a product route
 router.delete("/delete-product/:id", async (req, res) => {
     try {
