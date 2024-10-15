@@ -51,6 +51,24 @@ router.get("/order-details/:id", async (req, res) => {
     }
 });
 
+// Update a order route
+router.patch("/update-order/:id", async (req, res) => {
+    try {
+        const orderIdString = req.params.id;
+        const productId = parseInt(orderIdString);
+        const orderUpdateData = req.body;
+        const result = await prisma.order.update({
+            where: {
+                id: productId,
+            },
+            data: orderUpdateData,
+        });
+        res.json({ status: "success", data: result });
+    } catch (error) {
+        res.status(400).json({ status: "fail", data: error });
+    }
+});
+
 // GET /api/orders/aggregate
 router.get("/statistic", async (req, res) => {
     try {
