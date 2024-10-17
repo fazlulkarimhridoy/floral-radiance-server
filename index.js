@@ -10,6 +10,7 @@ const PORT = process.env.PORT || 3000;
 app.use(
     cors({
         origin: [
+            "http://floralradiancebd.com",
             "http://localhost:3001",
             "https://floral-radiance-client.netlify.app",
             "https://floral-radiance-client.vercel.app",
