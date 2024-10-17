@@ -1,11 +1,12 @@
 const express = require("express");
 const cors = require("cors");
+const jwt = require("jsonwebtoken");
 const bodyParser = require("body-parser");
 const routes = require("./routes");
-
 const app = express();
+const PORT = process.env.PORT || 3000;
 
-// middlewares
+// ------------------------------------middlewares-------------------------------------------
 app.use(
     cors({
         origin: [
@@ -14,20 +15,37 @@ app.use(
             "https://floral-radiance-client.vercel.app",
             "https://floral-radiance-server.vercel.app",
         ],
+        credentials: true,
+        allowedHeaders: ["Content-Type", "Authorization"],
     })
 );
 
+// ------------------------------------parser-------------------------------------------
 app.use(bodyParser.json({ limit: "100mb" }));
 
-// Use the routes
+// ------------------------------------auth/jwt api-------------------------------------------
+app.post("/login", (req, res) => {
+    const user = req.body;
+    if (
+        user.email === process.env.EMAIL &&
+        user.password === process.env.PASSWORD
+    ) {
+        const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+            expiresIn: "1h",
+        });
+        res.send({ success: true, token: token });
+    } else {
+        res.json({ status: "fail", message: "Invalid credentials" });
+    }
+});
+
+
+// ------------------------------------user routes-------------------------------------------
 app.use("/api", routes);
 
-const PORT = process.env.PORT || 3000;
-
-//check if server running and connect to database
+// ------------------------------------checking if server running and connected with db-------------------------------------------
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
-
 prisma
     .$connect()
     .then(() => {
@@ -37,7 +55,7 @@ prisma
         console.error("Error connecting to the database", error);
     });
 
-// server status
+// ------------------------------------checking server status-------------------------------------------
 app.get("/", (req, res) => {
     res.send("Floral Radiance server is running");
 });
