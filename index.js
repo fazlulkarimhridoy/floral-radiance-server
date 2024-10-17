@@ -16,6 +16,7 @@ app.use(
             "https://floral-radiance-server.vercel.app",
         ],
         credentials: true,
+        allowedHeaders: ["Content-Type", "Authorization"],
     })
 );
 
