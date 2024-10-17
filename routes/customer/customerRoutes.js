@@ -67,7 +67,6 @@ router.get("/statistic", async (req, res) => {
         const result = await prisma.customer.aggregate({
             _count: true,
         });
-        console.log(result);
         res.json({ status: "success", data: result });
     } catch (error) {
         res.status(400).json({ status: "fail", data: error });
