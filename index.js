@@ -10,6 +10,7 @@ const PORT = process.env.PORT || 3000;
 app.use(
     cors({
         origin: [
+            "https://www.floralradiancebd.com",
             "floralradiancebd.com",
             "https://floralradiancebd.com",
             "http://floralradiancebd.com",
