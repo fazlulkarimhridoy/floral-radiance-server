@@ -36,10 +36,10 @@ router.get("/all-category", async (req, res) => {
 router.delete("/delete-category/:id", async (req, res) => {
     try {
         const categoryIdString = req.params.id;
-        const categorytId = parseInt(categoryIdString);
+        const categoryId = parseInt(categoryIdString);
         const result = await prisma.category.delete({
             where: {
-                id: categorytId,
+                id: categoryId,
             },
         });
         res.json({ status: "success", data: result });

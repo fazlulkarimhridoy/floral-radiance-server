@@ -33,6 +33,26 @@ router.get("/all-order", async (req, res) => {
     }
 });
 
+// GET /api/orders
+router.get("/recent-order", async (req, res) => {
+    try {
+        const result = await prisma.order.findMany({
+            take: 8,
+            include: {
+                customer: true,
+            },
+            orderBy: {
+                id: "desc",
+            },
+            
+        });
+        res.json({ status: "success", data: result });
+    } catch (error) {
+        res.status(400).json({ status: "fail", data: error });
+    }
+});
+
+
 // GET /api/orders/:id
 router.get("/order-details/:id", async (req, res) => {
     try {
