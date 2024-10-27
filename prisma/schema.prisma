@@ -70,6 +70,8 @@ model Order {
   orderDate     DateTime?     @default(now())
   paymentMethod PaymentMethod @default(CASHON)
   items         Json
+  note          String
+  transactionId String
 
   @@map("order")
 }
