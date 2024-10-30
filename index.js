@@ -18,6 +18,7 @@ app.use(
             "https://floral-radiance-client.netlify.app",
             "https://floral-radiance-client.vercel.app",
             "https://floral-radiance-server.vercel.app",
+            "https://floral.mahim.xri.com.bd"
         ],
         credentials: true,
         allowedHeaders: ["Content-Type", "Authorization"],
