@@ -5,17 +5,20 @@ const prisma = new PrismaClient();
 
 async function storePhotoDataUrl(imagesList) {
     const images = [];
-    
+
     for (const imageUrl of imagesList) {
         try {
             const formData = new FormData();
             // Add the image data to the FormData object
-            formData.append('image', imageUrl); // Field name is 'image'
+            formData.append("image", imageUrl); // Field name is 'image'
 
-            const response = await fetch('https://backend.floralradiancebd.com/api/store-photo-dataurl', {
-                method: 'POST',
-                body: formData,
-            });
+            const response = await fetch(
+                "https://backend.floralradiancebd.com/api/store-photo-dataurl",
+                {
+                    method: "POST",
+                    body: formData,
+                }
+            );
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -23,17 +26,14 @@ async function storePhotoDataUrl(imagesList) {
 
             const data = await response.json();
             images.push(data.photo_url);
-
         } catch (error) {
-            console.error('Error uploading image:', error);
+            console.error("Error uploading image:", error);
             throw error; // Rethrow the error to stop processing
         }
     }
 
     return images;
-
 }
-
 
 // POST /api/products
 router.post("/add-product", async (req, res) => {
@@ -67,7 +67,10 @@ router.post("/add-product", async (req, res) => {
         res.json({ status: "success", data: result });
     } catch (error) {
         console.error("Error in /add-product route:", error);
-        res.status(400).json({ status: "fail", data: error.message || "An unknown error occurred" });
+        res.status(400).json({
+            status: "fail",
+            data: error.message || "An unknown error occurred",
+        });
     }
 });
 
@@ -91,6 +94,10 @@ router.patch("/update-product/:id", async (req, res) => {
         const productIdString = req.params.id;
         const productId = parseInt(productIdString);
         const productUpdateData = req.body;
+        const imagesList = req.body.images || []; // Default to empty array if no images
+        const images = await storePhotoDataUrl(imagesList);
+        productUpdateData.images = images;
+
         const result = await prisma.product.update({
             where: {
                 id: productId,
@@ -135,8 +142,8 @@ router.get("/images-and-name/:itemId", async (req, res) => {
             },
             select: {
                 product_name: true,
-                images: true
-            }
+                images: true,
+            },
         });
         if (!product) {
             return res
