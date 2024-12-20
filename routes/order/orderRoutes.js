@@ -1,4 +1,5 @@
 const express = require("express");
+const nodemailer = require("nodemailer");
 const router = express.Router();
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
@@ -44,14 +45,12 @@ router.get("/recent-order", async (req, res) => {
             orderBy: {
                 id: "desc",
             },
-            
         });
         res.json({ status: "success", data: result });
     } catch (error) {
         res.status(400).json({ status: "fail", data: error });
     }
 });
-
 
 // GET /api/orders/:id
 router.get("/order-details/:id", async (req, res) => {
@@ -101,6 +100,86 @@ router.get("/statistic", async (req, res) => {
         res.json({ status: "success", data: result });
     } catch (error) {
         res.status(400).json({ status: "fail", data: error });
+    }
+});
+
+// order notification send to admin gmail
+router.post("/send-order-notification", async (req, res) => {
+    const {
+        name,
+        phone,
+        email,
+        address,
+        deliveryDate,
+        deliveryTime,
+        note,
+        transactionId,
+        cartData,
+        totalPrice,
+    } = req.body;
+
+    console.log(req.body);
+
+    if (
+        !name ||
+        !phone ||
+        !email ||
+        !address ||
+        !deliveryDate ||
+        !deliveryTime ||
+        !transactionId ||
+        !cartData
+    ) {
+        return res.status(400).json({ message: "All fields are required" });
+    }
+
+    try {
+        // Configure the Nodemailer transporter
+        const transporter = nodemailer.createTransport({
+            service: "gmail", // Example using Gmail
+            auth: {
+                user: process.env.EMAIL_USER, // Your email address
+                pass: process.env.EMAIL_PASS, // Your email app password
+            },
+        });
+
+        // Prepare the email content
+        const emailContent = `
+          <h1>New Order Placed</h1>
+          <p><strong>Customer Name:</strong> ${name}</p>
+          <p><strong>Phone:</strong> ${phone}</p>
+          <p><strong>Email:</strong> ${email}</p>
+          <p><strong>Delivery Address:</strong> ${address}</p>
+          <p><strong>Delivery Date:</strong> ${deliveryDate}</p>
+          <p><strong>Delivery Time:</strong> ${deliveryTime}</p>
+          <p><strong>Notes:</strong> ${note}</p>
+          <p><strong>Transaction ID:</strong> ${transactionId}</p>
+          <p><strong>Total Price:</strong> ${totalPrice} BDT</p>
+          <h3>Order Items:</h3>
+          <ul>
+            ${cartData
+                .map(
+                    (item) =>
+                        `<li>${item.product_name} - ${item.price} BDT</li>`
+                )
+                .join("")}
+          </ul>
+        `;
+
+        // Send the email
+        await transporter.sendMail({
+            from: `"Flower Bouquet Store" <${process.env.EMAIL_USER}>`,
+            to: "fkhridoy4321@gmail.com", // Admin's email address
+            subject: "New Order Notification",
+            html: emailContent,
+        });
+
+        res.status(200).json({
+            message: "Order placed and email sent successfully!",
+        });
+    } catch (error) {
+        console.error("Error sending email:", error);
+        res.status(500).json({ message: "Failed to send email", error });
     }
 });
 
