@@ -105,31 +105,12 @@ router.get("/statistic", async (req, res) => {
 
 // order notification send to admin gmail
 router.post("/send-order-notification", async (req, res) => {
-    const {
-        name,
-        phone,
-        email,
-        address,
-        deliveryDate,
-        deliveryTime,
-        note,
-        transactionId,
-        cartData,
-        totalPrice,
-    } = req.body;
+    const { name, phone, email, address, deliveryDate, deliveryTime, note, transactionId, cartData, totalPrice } =
+        req.body;
 
     console.log(req.body);
 
-    if (
-        !name ||
-        !phone ||
-        !email ||
-        !address ||
-        !deliveryDate ||
-        !deliveryTime ||
-        !transactionId ||
-        !cartData
-    ) {
+    if (!name || !phone || !email || !address || !deliveryDate || !deliveryTime || !transactionId || !cartData) {
         return res.status(400).json({ message: "All fields are required" });
     }
 
@@ -157,19 +138,14 @@ router.post("/send-order-notification", async (req, res) => {
           <p><strong>Total Price:</strong> ${totalPrice} BDT</p>
           <h3>Order Items:</h3>
           <ul>
-            ${cartData
-                .map(
-                    (item) =>
-                        `<li>${item.product_name} - ${item.price} BDT</li>`
-                )
-                .join("")}
+            ${cartData.map((item) => `<li>${item.product_name} - ${item.price} BDT</li>`).join("")}
           </ul>
         `;
 
         // Send the email
         await transporter.sendMail({
             from: `"Flower Bouquet Store" <${process.env.EMAIL_USER}>`,
-            to: "fkhridoy4321@gmail.com", // Admin's email address
+            to: "floralradiancee@gmail.com", // Admin's email address
             subject: "New Order Notification",
             html: emailContent,
         });
