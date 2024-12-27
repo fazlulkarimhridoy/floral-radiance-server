@@ -18,12 +18,15 @@ app.use(
             "https://floral-radiance-client.netlify.app",
             "https://floral-radiance-client.vercel.app",
             "https://floral-radiance-server.vercel.app",
-            "https://floral.mahim.xri.com.bd"
+            "https://floral.mahim.xri.com.bd",
         ],
         credentials: true,
         allowedHeaders: ["Content-Type", "Authorization"],
     })
 );
+
+// allow all cors
+app.options("*", cors());
 
 // ------------------------------------parser-------------------------------------------
 app.use(bodyParser.json({ limit: "100mb" }));
@@ -31,10 +34,7 @@ app.use(bodyParser.json({ limit: "100mb" }));
 // ------------------------------------auth/jwt api-------------------------------------------
 app.post("/login", (req, res) => {
     const user = req.body;
-    if (
-        user.email === process.env.EMAIL &&
-        user.password === process.env.PASSWORD
-    ) {
+    if (user.email === process.env.EMAIL && user.password === process.env.PASSWORD) {
         const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
             expiresIn: "1h",
         });
@@ -43,7 +43,6 @@ app.post("/login", (req, res) => {
         res.json({ status: "fail", message: "Invalid credentials" });
     }
 });
-
 
 // ------------------------------------user routes-------------------------------------------
 app.use("/api", routes);
