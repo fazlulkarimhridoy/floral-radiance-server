@@ -34,7 +34,7 @@ model Product {
   product_name   String    @db.VarChar(255)
   price          Int
   discount_price Int?
-  stock          Int       @default(0)
+  stock          String    @default("available")
   category       String
   description    String    @db.LongText
   rating         Int       @default(0)
