@@ -5,12 +5,23 @@ const bodyParser = require("body-parser");
 const routes = require("./routes");
 const app = express();
 const PORT = process.env.PORT || 3000;
+const cors = require("cors");
 
 // ------------------------------------middlewares-------------------------------------------
-const cors = require("cors");
 
 app.use(
     cors({
+        origin: [
+            "https://www.floralradiancebd.com",
+            "floralradiancebd.com",
+            "https://floralradiancebd.com",
+            "http://floralradiancebd.com",
+            "http://localhost:3001",
+            "https://floral-radiance-client.netlify.app",
+            "https://floral-radiance-client.vercel.app",
+            "https://floral-radiance-server.vercel.app",
+            "https://floral.mahim.xri.com.bd",
+        ],
         origin: (origin, callback) => {
             callback(null, true); // Accept all origins dynamically
         },
@@ -18,6 +29,9 @@ app.use(
         allowedHeaders: ["Content-Type", "Authorization"],
     })
 );
+
+// allow all cors
+app.options("*", cors());
 
 // ------------------------------------parser-------------------------------------------
 app.use(bodyParser.json({ limit: "100mb" }));
