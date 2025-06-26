@@ -167,16 +167,4 @@ router.delete("/delete-product/:id", async (req, res) => {
     }
 });
 
-// GET /api/orders/aggregate
-router.get("/statistic", async (req, res) => {
-    try {
-        const result = await prisma.product.aggregate({
-            _count: true,
-        });
-        res.json({ status: "success", data: result });
-    } catch (error) {
-        res.status(400).json({ status: "fail", data: error });
-    }
-});
-
 module.exports = router;

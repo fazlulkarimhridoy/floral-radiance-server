@@ -38,7 +38,7 @@ router.get("/all-order", async (req, res) => {
 router.get("/recent-order", async (req, res) => {
     try {
         const result = await prisma.order.findMany({
-            take: 8,
+            take: 10,
             include: {
                 customer: true,
             },
@@ -88,18 +88,53 @@ router.patch("/update-order/:id", async (req, res) => {
     }
 });
 
-// GET /api/orders/aggregate
 router.get("/statistic", async (req, res) => {
     try {
-        const result = await prisma.order.aggregate({
+        // Group by status to get count and totalPrice sum for each
+        const grouped = await prisma.order.groupBy({
+            by: ["orderStatus"],
             _sum: {
                 totalPrice: true,
             },
             _count: true,
         });
-        res.json({ status: "success", data: result });
+
+        // Overall total sum and count
+        const overall = await prisma.order.aggregate({
+            _sum: {
+                totalPrice: true,
+            },
+            _count: true,
+        });
+
+        // Structure data
+        const stats = {
+            overall: {
+                totalRevenue: overall._sum.totalPrice || 0,
+                totalOrders: overall._count || 0,
+            },
+            pending: {
+                count: grouped.find((g) => g.orderStatus === "PENDING")?._count || 0,
+                amount: grouped.find((g) => g.orderStatus === "PENDING")?._sum.totalPrice || 0,
+            },
+            shipped: {
+                count: grouped.find((g) => g.orderStatus === "SHIPPED")?._count || 0,
+                amount: grouped.find((g) => g.orderStatus === "SHIPPED")?._sum.totalPrice || 0,
+            },
+            cancelled: {
+                count: grouped.find((g) => g.orderStatus === "CANCELLED")?._count || 0,
+                amount: grouped.find((g) => g.orderStatus === "CANCELLED")?._sum.totalPrice || 0,
+            },
+            delivered: {
+                count: grouped.find((g) => g.orderStatus === "DELIVERED")?._count || 0,
+                amount: grouped.find((g) => g.orderStatus === "DELIVERED")?._sum.totalPrice || 0,
+            },
+        };
+
+        res.json({ status: "success", data: stats });
     } catch (error) {
-        res.status(400).json({ status: "fail", data: error });
+        console.error(error);
+        res.status(400).json({ status: "fail", error });
     }
 });
 
