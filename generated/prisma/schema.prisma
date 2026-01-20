@@ -1,0 +1,83 @@
+generator client {
+  provider      = "prisma-client-js"
+  output        = "../generated/prisma"
+  binaryTargets = ["native", "debian-openssl-1.0.x", "debian-openssl-1.1.x", "debian-openssl-3.0.x", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Customer {
+  id         Int      @id @default(autoincrement())
+  customerId String   @unique @default(uuid())
+  name       String
+  email      String
+  phone      String
+  address    String
+  createdAt  DateTime @default(now())
+  Orders     Order[]
+
+  @@map("customer")
+}
+
+model Product {
+  id             Int       @id @default(autoincrement())
+  productId      Int       @unique
+  images         String    @db.LongText
+  product_name   String    @db.VarChar(255)
+  price          Int
+  discount_price Int?
+  stock          String    @default("available")
+  category       String
+  description    String    @db.LongText
+  rating         Int       @default(0)
+  created_at     DateTime? @default(now()) @db.Timestamp(0)
+  updated_at     DateTime? @default(now()) @updatedAt @db.Timestamp(0)
+  categoryId     Int
+  Category       Category  @relation(fields: [categoryId], references: [id])
+
+  @@index([categoryId], map: "product_categoryId_fkey")
+  @@map("product")
+}
+
+model Category {
+  id          Int       @id @default(autoincrement())
+  categoryId  Int
+  name        String
+  description String
+  products    Product[]
+
+  @@map("category")
+}
+
+model Order {
+  id            Int           @id @default(autoincrement())
+  customerId    Int
+  totalPrice    Int
+  deliveryDate  String
+  deliveryTime  String
+  orderStatus   OrderStatus   @default(PENDING)
+  orderDate     DateTime?     @default(now())
+  paymentMethod PaymentMethod @default(CASHON)
+  items         String        @db.LongText
+  note          String
+  transactionId String
+  customer      Customer      @relation(fields: [customerId], references: [id])
+
+  @@index([customerId], map: "order_customerId_fkey")
+  @@map("order")
+}
+
+enum OrderStatus {
+  PENDING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  CASHON
+  BKASH
+}
