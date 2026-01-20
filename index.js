@@ -2,6 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const bodyParser = require("body-parser");
+const fs = require("fs");
+const path = require("path");
 const routes = require("./routes");
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -20,6 +22,13 @@ app.use(
 
 // ------------------------------------parser-------------------------------------------
 app.use(bodyParser.json({ limit: "100mb" }));
+
+// ------------------------------------static assets-------------------------------------------
+// Ensure public directories exist for serving uploaded assets
+const PUBLIC_DIR = path.join(__dirname, "public");
+const PRODUCT_IMAGES_DIR = path.join(PUBLIC_DIR, "products");
+fs.mkdirSync(PRODUCT_IMAGES_DIR, { recursive: true });
+app.use("/public", express.static(PUBLIC_DIR));
 
 // ------------------------------------auth/jwt api-------------------------------------------
 app.post("/login", (req, res) => {
