@@ -3,8 +3,8 @@
     "version": "1.0.0",
     "main": "index.js",
     "scripts": {
-        "start": "nodemon server.js",
-        "postinstall": "prisma generate",
+        "start": "nodemon index.js",
+        "postinstall": "prisma generate && prisma db push",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "keywords": [],
@@ -20,6 +20,7 @@
         "nodemailer": "^6.9.16"
     },
     "devDependencies": {
+        "@types/node": "^25.0.9",
         "prisma": "^5.20.0"
     }
 }
